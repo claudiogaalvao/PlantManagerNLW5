@@ -38,7 +38,7 @@ export function MyPlants() {
 
     return(
         <View style={styles.container}>
-            <Header />
+            <Header firstWord="Minhas" secondWord="Plantinhas" />
 
             <View style={styles.spotlight}>
                 <Image source={waterdrop} style={styles.spotlightImage} />
@@ -50,7 +50,7 @@ export function MyPlants() {
 
             <View style={styles.plants}>
                 <Text style={styles.plantsTitle}>
-                    Próximas regas
+                    Próximas regadas
                 </Text>
 
                 <FlatList 

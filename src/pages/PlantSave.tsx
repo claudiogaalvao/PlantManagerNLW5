@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { SvgFromUri } from 'react-native-svg';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
-import { Alert, Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { Button } from '../components/Button';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 import { PlantProps, savePlant } from '../libs/storage';
+
+import { Feather } from '@expo/vector-icons';
 
 import waterdrop from '../assets/waterdrop.png';
 
@@ -87,30 +89,32 @@ export function PlantSave() {
                     </Text>
                 </View>
 
-                <Text style={styles.alertLabel}>
-                    Escolha o melhor horário para ser lembrado:
-                </Text>
+                <View style={styles.alertContent}>
+                    <Text style={styles.alertLabel}>
+                        Escolha o melhor horário para ser lembrado:
+                    </Text>
 
-                {showDatePicker && <DateTimePicker
-                value={selectedDateTime} 
-                mode="time" 
-                display="spinner" 
-                onChange={handleChangeTime} />}
+                    {showDatePicker && <DateTimePicker
+                    value={selectedDateTime} 
+                    mode="time" 
+                    display="spinner" 
+                    onChange={handleChangeTime} />}
 
-                {
-                    Platform.OS === 'android' && (
-                        <TouchableOpacity style={styles.dateTimePickerButton} onPress={handleOpenDateTimePickerForAndroid}>
-                            <Text style={styles.dateTimePickerLabel}>
-                                Lembrete agendado para
-                            </Text>
-                            <Text style={styles.dateTimePickerHour}>
-                                {format(selectedDateTime, 'HH:mm')}
-                            </Text>
-                        </TouchableOpacity>
-                    )
-                }
+                    {
+                        Platform.OS === 'android' && (
+                            <TouchableOpacity style={styles.dateTimePickerButton} onPress={handleOpenDateTimePickerForAndroid}>
+                                <Text style={styles.dateTimePickerLabel}>
+                                    Lembrete agendado para
+                                </Text>
+                                <Text style={styles.dateTimePickerHour}>
+                                    {format(selectedDateTime, 'HH:mm')}
+                                </Text>                       
+                            </TouchableOpacity>
+                        )
+                    }
+                </View>
 
-                <Button title="Cadastrar planta" onPress={handleSave} />
+                <Button title="Confirmar alterações" onPress={handleSave} />
             </View>
         </View>
     );
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
     },
     controller: {
         backgroundColor: colors.white,
-        paddingHorizontal: 20,
+        paddingHorizontal: 30,
         paddingTop: 20,
         paddingBottom: getBottomSpace() || 20
     },
@@ -156,8 +160,11 @@ const styles = StyleSheet.create({
         backgroundColor: colors.blue_light,
         padding: 20,
         borderRadius: 20,
-        position: 'relative',
-        bottom: 70
+        alignSelf: 'center',
+        position: 'absolute',
+        width: Dimensions.get('window').width - 60,
+        top: -60,
+        zIndex: 3
     },
     tipImage: {
         width: 56,
@@ -171,6 +178,9 @@ const styles = StyleSheet.create({
         fontSize: 17,
         textAlign: 'justify'
     },
+    alertContent: {
+        paddingTop: 70
+    },
     alertLabel: {
         textAlign: 'center',
         fontFamily: fonts.complement,
@@ -179,14 +189,22 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     dateTimePickerButton: {
-        width: '100%',
+        width: 'auto',
         alignItems: 'center',
-        paddingVertical: 15
+        paddingVertical: 15,
+        marginHorizontal: 30,
+        backgroundColor: colors.shape,
+        borderRadius: 15,
+        marginVertical: 25
     },
     dateTimePickerLabel: {
         color: colors.heading,
         fontSize: 12,
         fontFamily: fonts.text
+    },
+    dateTimePickerWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     dateTimePickerHour: {
         color: colors.heading,
