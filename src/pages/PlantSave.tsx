@@ -14,7 +14,7 @@ import waterdrop from '../assets/waterdrop.png';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 import { format, isBefore } from 'date-fns';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Params {
     plant: PlantProps;
@@ -63,7 +63,9 @@ export function PlantSave() {
     }
 
     return(
-        <View style={styles.container}>
+        <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.container}>
             <View style={styles.plantInfo}>
                 <SvgFromUri 
                 uri={plant.photo} 
@@ -116,7 +118,7 @@ export function PlantSave() {
 
                 <Button title="Confirmar alterações" onPress={handleSave} />
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
