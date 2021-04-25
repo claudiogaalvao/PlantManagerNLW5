@@ -1,41 +1,64 @@
-import { formatDistance } from 'date-fns';
-import { pt } from 'date-fns/locale';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, View, Text, Alert } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import { loadPlants, PlantProps, removePlant } from '../libs/storage';
+
 import { Header } from '../components/Header';
-import { loadPlants, PlantProps, removePlant, StoragePlantProps } from '../libs/storage';
+import { Load } from '../components/Load';
+import { PlantCardSecondary } from '../components/PlantCardSecondary';
+import { ModalDeletePlant } from '../components/ModalDeletePlant';
+
+import { formatDistance } from 'date-fns';
+import { pt } from 'date-fns/locale';
+
 import colors from '../styles/colors';
+import fonts from '../styles/fonts';
 
 import waterdrop from '../assets/waterdrop.png';
-import fonts from '../styles/fonts';
-import { PlantCardSecondary } from '../components/PlantCardSecondary';
-import { Load } from '../components/Load';
 
 export function MyPlants() {
     const [myPlants, setMyPlants] = useState<PlantProps[]>([]);
     const [loading, setLoading] = useState(true);
     const [nextWatered, setNextWatered] = useState<string>();
+    const [plantSelected, setPlantSelected] = useState<PlantProps>(myPlants[0]);
+    const [showModal, setShowModal] = useState(false);
 
-    function handleRemove(plant: PlantProps) {
-        Alert.alert('Remover', `Deseja remover a ${plant.name}?`, [
-            {
-                text: 'Não',
-                style: 'cancel'
-            },
-            {
-                text: 'Sim',
-                onPress: async () => {
-                    try {
-                        await removePlant(String(plant.id));
+    function handleSwipeClickRemove(plant: PlantProps) {
+        setPlantSelected(plant);
+        setShowModal(true);
+        // Alert.alert('Remover', `Deseja remover a ${plant.name}?`, [
+        //     {
+        //         text: 'Não',
+        //         style: 'cancel'
+        //     },
+        //     {
+        //         text: 'Sim',
+        //         onPress: async () => {
+        //             try {
+        //                 await removePlant(String(plant.id));
 
-                        setMyPlants(oldData => oldData.filter((item) => item.id !== plant.id));
-                    } catch (error) {
-                        Alert.alert('Não foi possível remover! 😢');
-                    }
-                }
-            }
-        ]);
+        //                 setMyPlants(oldData => oldData.filter((item) => item.id !== plant.id));
+        //             } catch (error) {
+        //                 Alert.alert('Não foi possível remover! 😢');
+        //             }
+        //         }
+        //     }
+        // ]);
+    }
+
+    async function handleRemovePlant(plant: PlantProps) {
+        try {
+            await removePlant(String(plant.id));
+
+            setMyPlants(oldData => oldData.filter((item) => item.id !== plant.id));
+            setShowModal(false);
+        } catch (error) {
+            Alert.alert('Não foi possível remover! 😢');
+        }
+    }
+
+    function handleCancelRemovePlant() {
+        setShowModal(false);
     }
 
     useEffect(() => {
@@ -52,6 +75,7 @@ export function MyPlants() {
                 `Não esqueça de regar a ${plantsStorage[0].name} daqui ${nextTime}.`
             );
             setMyPlants(plantsStorage);
+            setPlantSelected(plantsStorage[0]);
             setLoading(false);
         }
 
@@ -63,33 +87,41 @@ export function MyPlants() {
     }
 
     return(
-        <View style={styles.container}>
-            <Header firstWord="Minhas" secondWord="Plantinhas" />
+        <>
+            <View style={styles.container}>
+                <Header firstWord="Minhas" secondWord="Plantinhas" />
 
-            <View style={styles.spotlight}>
-                <Image source={waterdrop} style={styles.spotlightImage} />
+                <View style={styles.spotlight}>
+                    <Image source={waterdrop} style={styles.spotlightImage} />
 
-                <Text style={styles.spotlightText}>
-                    {nextWatered}
-                </Text>
+                    <Text style={styles.spotlightText}>
+                        {nextWatered}
+                    </Text>
+                </View>
+
+                <View style={styles.plants}>
+                    <Text style={styles.plantsTitle}>
+                        Próximas regadas
+                    </Text>
+
+                    <FlatList 
+                    data={myPlants} 
+                    keyExtractor={(item) => String(item.id)} 
+                    renderItem={({ item }) => (
+                        <PlantCardSecondary
+                        data={item}
+                        handleRemove={() => handleSwipeClickRemove(item)} />
+                    )} 
+                    contentContainerStyle={styles.myPlantsList} />
+                </View>
             </View>
 
-            <View style={styles.plants}>
-                <Text style={styles.plantsTitle}>
-                    Próximas regadas
-                </Text>
-
-                <FlatList 
-                data={myPlants} 
-                keyExtractor={(item) => String(item.id)} 
-                renderItem={({ item }) => (
-                    <PlantCardSecondary
-                    data={item}
-                    handleRemove={() => handleRemove(item)} />
-                )} 
-                contentContainerStyle={styles.myPlantsList} />
-            </View>
-        </View>
+            <ModalDeletePlant 
+            plant={plantSelected} 
+            isOpen={showModal}
+            handleCancel={handleCancelRemovePlant} 
+            handleRemovePlant={handleRemovePlant} />
+        </>
     );
 }
 

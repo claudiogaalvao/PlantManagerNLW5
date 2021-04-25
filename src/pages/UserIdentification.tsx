@@ -27,11 +27,8 @@ export function UserIdentification() {
     }
 
     async function handleSubmit() {
-        if(!name)
-            return Alert.alert('Me diz como chamar você 😢');       
-
         try {
-            await AsyncStorage.setItem('@plantmanager:user', name);
+            await AsyncStorage.setItem('@plantmanager:user', name ? name : '');
             navigation.navigate('Confirmation', { 
                 title: 'Prontinho', 
                 subtitle: 'Agora vamos começar a cuidar das suas plantinhas com muito cuidado.',
@@ -74,7 +71,7 @@ export function UserIdentification() {
                             />
 
                             <View style={styles.footer}>
-                                <Button title="Confirmar" onPress={handleSubmit} />
+                                <Button title="Confirmar" disabled={!name} onPress={!name ? () => {} : handleSubmit} />
                             </View>
                         </View>
                     </View>
