@@ -26,24 +26,6 @@ export function MyPlants() {
     function handleSwipeClickRemove(plant: PlantProps) {
         setPlantSelected(plant);
         setShowModal(true);
-        // Alert.alert('Remover', `Deseja remover a ${plant.name}?`, [
-        //     {
-        //         text: 'Não',
-        //         style: 'cancel'
-        //     },
-        //     {
-        //         text: 'Sim',
-        //         onPress: async () => {
-        //             try {
-        //                 await removePlant(String(plant.id));
-
-        //                 setMyPlants(oldData => oldData.filter((item) => item.id !== plant.id));
-        //             } catch (error) {
-        //                 Alert.alert('Não foi possível remover! 😢');
-        //             }
-        //         }
-        //     }
-        // ]);
     }
 
     async function handleRemovePlant(plant: PlantProps) {
@@ -118,9 +100,9 @@ export function MyPlants() {
 
             <ModalDeletePlant 
             plant={plantSelected} 
-            isOpen={showModal}
+            showModal={showModal}
             handleCancel={handleCancelRemovePlant} 
-            handleRemovePlant={handleRemovePlant} />
+            handleRemove={handleRemovePlant} />
         </>
     );
 }
